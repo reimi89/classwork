@@ -13,4 +13,14 @@ class FrontentController extends Controller
     public function about(){
         return view('about');
     }
+
+    public function portfolio(){
+        return view('portfolio');
+    }
+    public function contacts(){
+        return view('contacts');
+    }
+    public function spam(){
+        return view('spam');
+    }
 }
