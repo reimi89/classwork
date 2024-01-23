@@ -1,4 +1,5 @@
-@extends('loyout.master');
+@extends('layout.master')
+
 @section('content')
 
 @endsection
