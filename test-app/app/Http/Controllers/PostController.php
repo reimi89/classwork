@@ -12,7 +12,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        return view('post.index');
+        $posts = Post::all();
+        return view('post.index', compact('posts'));
     }
 
     /**
@@ -20,6 +21,7 @@ class PostController extends Controller
      */
     public function create()
     {
+
         return view('post.create');
     }
 
@@ -31,19 +33,22 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required',
             'text' => 'required',
-            'image' => 'required|image|mimes:jpg,png,jpeg,bmp,svg'
+            'image' => 'required|image|mimes:jpg,png,jpeg,bmp,gif,svg|max:2048'
         ]);
+//        Здесь берем данные из всех текстовых полей
         $input = $request->all();
-        if($image = $request->file('image')){
-            $desctionPach = 'images/';
+
+//        Здесь берем картинку из поля с name = image
+        if($image = $request->file('image')) {
+            $destionPath = 'images/';
             $profileImage = date('YmHis') . "." . $image->getClientOriginalExtension();
-            $image->move($desctionPach, $profileImage);
-            $input['image'] = $profileImage;
+            $image->move($destionPath,$profileImage);
+            $input['image'] = "$profileImage";
         }
 
         Post::create($input);
 
-        return redirect()->route('post.index')->with('success', 'Ваша запись добавлена');
+        return redirect()->route('post.index')->with('success', 'Ваш пост был добавлен');
     }
 
     /**
@@ -57,24 +62,43 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Post $post)
     {
-        return view('post.edit');
+        return view('post.edit', compact('post'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'text' => 'required'
+        ]);
+
+        $input = $request->all();
+
+        if($image = $request->file('image')) {
+            $destionPath = 'images/';
+            $profileImage = date('YmHis') . "." . $image->getClientOriginalExtension();
+            $image->move($destionPath,$profileImage);
+            $input['image'] = "$profileImage";
+        } else {
+           unset($input['image']);
+        }
+
+        $post->update($input);
+
+        return redirect()->route('post.index')->with('success', 'Ваша запись успешно обновлена!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return redirect()->route('post.index')->with('success', 'Ваша запись была удалена');
     }
 }
