@@ -8,6 +8,6 @@
     <title>Document</title>
 </head>
 <body>
-
+@include('includes.menu')
 </body>
 </html>
